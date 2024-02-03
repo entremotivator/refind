@@ -1,8 +1,9 @@
+# Updated code without reportlab
+
 import streamlit as st
 import http.client
 import json
 from urllib.parse import quote
-from reportlab.pdfgen import canvas
 
 # Function to make the API request
 def make_api_request(api_key, address):
@@ -74,34 +75,21 @@ def display_property_info(property_data):
     st.write(f"**Longitude:** {property_data['longitude']}")
     st.write(f"**Latitude:** {property_data['latitude']}")
 
-# Function to export data to PDF
-def export_to_pdf(property_data, filename="property_info.pdf"):
-    try:
-        c = canvas.Canvas(filename)
-        c.drawString(100, 800, f"Property Information for {property_data['formattedAddress']}")
-        
-        # Additional PDF content, customize as needed
-        
-        c.save()
-        st.success(f"PDF generated successfully: {filename}")
-    except Exception as e:
-        st.warning(f"Failed to export data to PDF. Error: {e}")
-
-# Function to generate letter based on property situation
+# Function to generate text-based letter based on property situation
 def generate_letter(property_data):
     # Customize the letter templates based on different situations
     if property_data['ownerOccupied']:
-        return "Dear Homeowner, We are interested in purchasing your property at [Address]. Please let us know if you are open to discussing a potential sale."
+        return f"Dear Homeowner,\n\nWe are interested in purchasing your property at {property_data['formattedAddress']}. Please let us know if you are open to discussing a potential sale."
 
     if property_data['propertyType'] == 'Single Family':
-        return "Dear Owner, We are currently looking for a single-family home, and your property at [Address] caught our attention. We would like to inquire about the possibility of purchasing it."
+        return f"Dear Owner,\n\nWe are currently looking for a single-family home, and your property at {property_data['formattedAddress']} caught our attention. We would like to inquire about the possibility of purchasing it."
 
     if 'foreclosure' in property_data['features']:
-        return "Dear Property Owner, We have learned that your property at [Address] is facing foreclosure. We are interested in discussing potential solutions and may be interested in purchasing the property."
+        return f"Dear Property Owner,\n\nWe have learned that your property at {property_data['formattedAddress']} is facing foreclosure. We are interested in discussing potential solutions and may be interested in purchasing the property."
 
     # Add more letter templates for other situations as needed
 
-    return "Dear Property Owner, We are interested in your property at [Address]. Please contact us to discuss the potential sale."
+    return f"Dear Property Owner,\n\nWe are interested in your property at {property_data['formattedAddress']}. Please contact us to discuss the potential sale."
 
 # Main Streamlit app
 def main():
@@ -118,10 +106,6 @@ def main():
             
             if properties:
                 display_property_info(properties[0])
-
-                # Export to PDF
-                if st.button("Export to PDF"):
-                    export_to_pdf(properties[0])
 
                 # Generate Letter
                 if st.button("Generate Letter"):
