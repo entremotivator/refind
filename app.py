@@ -1,6 +1,7 @@
 import streamlit as st
 import http.client
 import csv
+import json
 from urllib.parse import quote
 
 # Function to get property information from the API using http.client
@@ -47,7 +48,7 @@ def main():
             if properties:
                 # Display organized property information
                 st.write("### Property Information:")
-                property_data = eval(properties)  # Convert JSON string to Python object
+                property_data = json.loads(properties)  # Convert JSON string to Python object
                 for key, value in property_data[0].items():
                     st.write(f"**{key}:** {value}")
 
