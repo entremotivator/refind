@@ -1,6 +1,6 @@
 import streamlit as st
 import http.client
-import pandas as pd
+import csv
 from urllib.parse import quote
 
 # Function to get property information from the API using http.client
@@ -45,16 +45,18 @@ def main():
         if api_key and address:
             properties = get_property_info(api_key, address)
             if properties:
-                # Parse JSON response
-                property_data = pd.json_normalize(properties)
-                
                 # Display organized property information
                 st.write("### Property Information:")
-                st.write(property_data)
+                property_data = eval(properties)  # Convert JSON string to Python object
+                for key, value in property_data[0].items():
+                    st.write(f"**{key}:** {value}")
 
                 # Export to CSV
                 if st.button("Export to CSV"):
-                    property_data.to_csv("property_info.csv", index=False)
+                    with open("property_info.csv", "w", newline="") as csvfile:
+                        csv_writer = csv.writer(csvfile)
+                        csv_writer.writerow(property_data[0].keys())
+                        csv_writer.writerow(property_data[0].values())
                     st.success("Data exported successfully to property_info.csv.")
             else:
                 st.warning("No data available for the provided address.")
