@@ -1,5 +1,6 @@
 import streamlit as st
 import http.client
+import pandas as pd
 from urllib.parse import quote
 
 # Function to get property information from the API using http.client
@@ -19,14 +20,14 @@ def get_property_info(api_key, address):
         # Check if the response contains JSON data
         if 'application/json' in res.getheader('Content-Type', ''):
             data = res.read().decode("utf-8")
-            return data, res.getheaders()
+            return data
         else:
             st.error(f"Unexpected response content: {res.read().decode('utf-8')}")
-            return None, None
+            return None
 
     except Exception as e:
         st.error(f"Error making API request: {e}")
-        return None, None
+        return None
 
     finally:
         conn.close()
@@ -42,15 +43,19 @@ def main():
 
     if st.sidebar.button("Get Property Info"):
         if api_key and address:
-            properties, headers = get_property_info(api_key, address)
+            properties = get_property_info(api_key, address)
             if properties:
-                st.write("### Property Information:")
-                st.write(properties)
+                # Parse JSON response
+                property_data = pd.json_normalize(properties)
                 
-                # Display response headers
-                st.write("### Response Headers:")
-                for key, value in headers:
-                    st.write(f"**{key}:** {value}")
+                # Display organized property information
+                st.write("### Property Information:")
+                st.write(property_data)
+
+                # Export to CSV
+                if st.button("Export to CSV"):
+                    property_data.to_csv("property_info.csv", index=False)
+                    st.success("Data exported successfully to property_info.csv.")
             else:
                 st.warning("No data available for the provided address.")
         else:
@@ -58,4 +63,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
