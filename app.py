@@ -1,34 +1,35 @@
-import http.client
 import csv
 import json
 from urllib.parse import quote
-from reportlab.pdfgen import canvas
+import PyPDF2
 from io import BytesIO
 
 import streamlit as st
 
-# Function to get property information from the API using http.client
+# Function to get property information from the API
 def get_property_info(api_key, address):
     # (unchanged code)
 
-# Function to export properties to PDF
+# Function to export properties to PDF using PyPDF2
 def export_to_pdf(properties):
     pdf_buffer = BytesIO()
-    pdf = canvas.Canvas(pdf_buffer)
+    pdf_writer = PyPDF2.PdfWriter()
 
-    pdf.setTitle("Property Information Report")
+    # Create PDF document
+    pdf_writer.add_page()
+    pdf_writer.set_font("Arial", size=12)
 
-    pdf.drawString(72, 800, "Property Information Report")
-    pdf.line(72, 790, 525, 790)
+    # Add content to the PDF
+    pdf_writer.cell(200, 10, txt="Property Information Report", ln=True, align='C')
 
-    y_position = 750
     for property_data in properties:
         for key, value in property_data.items():
-            pdf.drawString(72, y_position, f"{key}: {value}")
-            y_position -= 15
+            pdf_writer.cell(200, 10, txt=f"{key}: {value}", ln=True)
 
-    pdf.save()
+    # Save PDF to buffer
     pdf_buffer.seek(0)
+    pdf_writer.output(pdf_buffer)
+
     return pdf_buffer
 
 # Main Streamlit app
