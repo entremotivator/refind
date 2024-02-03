@@ -30,7 +30,14 @@ def display_property_info(property_info):
     st.write(f"**Formatted Address:** {property_info.get('formattedAddress', 'N/A')}")
     st.write(f"**Assessor ID:** {property_info.get('assessorID', 'N/A')}")
     st.write(f"**Bedrooms:** {property_info.get('bedrooms', 'N/A')}")
-    # Add more fields similarly
+
+    # Check if the 'features' key exists before trying to access its properties
+    features = property_info.get('features', {})
+    st.write("#### Features:")
+    st.write(f"**Architecture Type:** {features.get('architectureType', 'N/A')}")
+    st.write(f"**Cooling:** {features.get('cooling', 'N/A')}")
+    st.write(f"**Cooling Type:** {features.get('coolingType', 'N/A')}")
+    # Add more feature fields similarly
 
 # Main Streamlit app
 def main():
@@ -48,8 +55,6 @@ def main():
                 display_property_info(properties)
             else:
                 st.warning("No data available for the provided address.")
-
-    # ... (rest of the code remains the same)
 
 if __name__ == "__main__":
     main()
