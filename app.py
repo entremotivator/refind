@@ -1,35 +1,35 @@
 import streamlit as st
+import http.client
 import csv
 import json
 from urllib.parse import quote
 
-# Function to get property information from the API
+# Function to get property information from the API using http.client
 def get_property_info(api_key, address):
-    # Your existing code for making API requests
+    conn = http.client.HTTPSConnection("realty-mole-property-api.p.rapidapi.com")
+    headers = {
+        'X-RapidAPI-Key': api_key,
+        'X-RapidAPI-Host': 'realty-mole-property-api.p.rapidapi.com'
+    }
 
-# Display basic property details
-def display_basic_details(property_data):
-    # Your existing code for displaying basic details
+    try:
+        # Encode the address for the URL
+        encoded_address = quote(address)
+        # Make the API request
+        conn.request("GET", f"/properties?address={encoded_address}", headers=headers)
+        res = conn.getresponse()
+        # Check if the response contains JSON data
+        if 'application/json' in res.getheader('Content-Type', ''):
+            data = res.read().decode("utf-8")
+            return json.loads(data)
+        else:
+            return None  # No JSON data in the response
 
-# Display property features
-def display_features(features):
-    # Your existing code for displaying features
+    except Exception as e:
+        return None  # Error making the API request
 
-# Display tax assessment details
-def display_tax_assessment(tax_assessment):
-    # Your existing code for displaying tax assessment details
-
-# Display property taxes
-def display_property_taxes(property_taxes):
-    # Your existing code for displaying property taxes
-
-# Display owner information
-def display_owner_info(owner):
-    # Your existing code for displaying owner information
-
-# Display geographical information
-def display_geographical_info(property_data):
-    # Your existing code for displaying geographical information
+    finally:
+        conn.close()
 
 # Main Streamlit app
 def main():
@@ -48,14 +48,8 @@ def main():
                 # Display organized property information
                 st.write("### Property Information:")
                 property_data = properties[0]
-
-                # Display different sections of property information
-                display_basic_details(property_data)
-                display_features(property_data['features'])
-                display_tax_assessment(property_data['taxAssessment'])
-                display_property_taxes(property_data['propertyTaxes'])
-                display_owner_info(property_data['owner'])
-                display_geographical_info(property_data)
+                for key, value in property_data.items():
+                    st.write(f"**{key}:** {value}")
 
                 # Export to CSV
                 if st.button("Export to CSV"):
