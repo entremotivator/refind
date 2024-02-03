@@ -3,10 +3,9 @@ import http.client
 import csv
 import json
 from urllib.parse import quote
-from typing import Any, Dict, Optional
 
-# Function to get property information from the API
-def get_property_info(api_key: str, address: str) -> Optional[Dict[str, Any]]:
+# Function to get property information from the API using http.client
+def get_property_info(api_key, address):
     try:
         with http.client.HTTPSConnection("realty-mole-property-api.p.rapidapi.com") as conn:
             headers = {
@@ -31,13 +30,13 @@ def get_property_info(api_key: str, address: str) -> Optional[Dict[str, Any]]:
     return None
 
 # Function to display property information
-def display_property_info(property_data: Dict[str, Any]) -> None:
+def display_property_info(property_data):
     st.write("### Property Information:")
     for key, value in property_data.items():
         st.write(f"**{key}:** {value}")
 
 # Function to export data to CSV
-def export_to_csv(property_data: Dict[str, Any], filename: str = "property_info.csv") -> None:
+def export_to_csv(property_data, filename="property_info.csv"):
     try:
         with open(filename, "w", newline="") as csvfile:
             csv_writer = csv.writer(csvfile)
@@ -48,12 +47,12 @@ def export_to_csv(property_data: Dict[str, Any], filename: str = "property_info.
         st.warning(f"Failed to export data to CSV. Error: {e}")
 
 # Main Streamlit app
-def main() -> None:
+def main():
     st.title("Realtor Property Information App")
 
     # Sidebar for user input
     st.sidebar.header("User Input:")
-    api_key = st.sidebar.text_input("Enter your API key", help="Obtain it from Realty Mole API")
+    api_key = st.sidebar.text_input("Enter your API key", help="Get it from Realty Mole API")
     address = st.sidebar.text_input("Enter the address", help="E.g., 5500 Grand Lake Dr, San Antonio, TX, 78244")
 
     if st.sidebar.button("Get Property Info"):
