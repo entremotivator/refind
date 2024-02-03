@@ -1,5 +1,6 @@
 import streamlit as st
 import http.client
+from urllib.parse import quote
 
 # Function to get property information from the API using http.client
 def get_property_info(api_key, address):
@@ -11,7 +12,7 @@ def get_property_info(api_key, address):
 
     try:
         # Encode the address for the URL
-        encoded_address = http.client.quote(address)
+        encoded_address = quote(address)
         # Make the API request
         conn.request("GET", f"/properties?address={encoded_address}", headers=headers)
         res = conn.getresponse()
@@ -57,3 +58,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
