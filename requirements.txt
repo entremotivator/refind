@@ -1,4 +1,4 @@
 streamlit==0.97.0
 http.client2
 reportlab==3.6.1
-
+pypdf
