@@ -1,49 +1,34 @@
 import streamlit as st
-import requests
+import http.client
 
-# Function to get property information from the API
+# Function to get property information from the API using http.client
 def get_property_info(api_key, address):
-    url = "https://rapidapi.com/realtymole/api/realty-mole-property"
+    conn = http.client.HTTPSConnection("realty-mole-property-api.p.rapidapi.com")
     headers = {
         'X-RapidAPI-Key': api_key,
         'X-RapidAPI-Host': 'realty-mole-property-api.p.rapidapi.com'
     }
 
-    params = {'address': address}
-
     try:
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()  # Raise an HTTPError for bad responses
-        data = response.json()
-        response_headers = response.headers
-        return data, response_headers
-    except requests.exceptions.RequestException as e:
+        # Encode the address for the URL
+        encoded_address = http.client.quote(address)
+        # Make the API request
+        conn.request("GET", f"/properties?address={encoded_address}", headers=headers)
+        res = conn.getresponse()
+        # Check if the response contains JSON data
+        if 'application/json' in res.getheader('Content-Type', ''):
+            data = res.read().decode("utf-8")
+            return data, res.getheaders()
+        else:
+            st.error(f"Unexpected response content: {res.read().decode('utf-8')}")
+            return None, None
+
+    except Exception as e:
         st.error(f"Error making API request: {e}")
         return None, None
 
-# Function to display property information
-def display_property_info(property_info, response_headers):
-    st.write("### Property Information:")
-    st.write(f"**Address Line 1:** {property_info.get('addressLine1', 'N/A')}")
-    st.write(f"**City:** {property_info.get('city', 'N/A')}")
-    st.write(f"**State:** {property_info.get('state', 'N/A')}")
-    st.write(f"**Zip Code:** {property_info.get('zipCode', 'N/A')}")
-    st.write(f"**Formatted Address:** {property_info.get('formattedAddress', 'N/A')}")
-    st.write(f"**Assessor ID:** {property_info.get('assessorID', 'N/A')}")
-    st.write(f"**Bedrooms:** {property_info.get('bedrooms', 'N/A')}")
-
-    # Check if the 'features' key exists before trying to access its properties
-    features = property_info.get('features', {})
-    st.write("#### Features:")
-    st.write(f"**Architecture Type:** {features.get('architectureType', 'N/A')}")
-    st.write(f"**Cooling:** {features.get('cooling', 'N/A')}")
-    st.write(f"**Cooling Type:** {features.get('coolingType', 'N/A')}")
-    # Add more feature fields similarly
-
-    # Display response headers
-    st.write("### Response Headers:")
-    for key, value in response_headers.items():
-        st.write(f"**{key}:** {value}")
+    finally:
+        conn.close()
 
 # Main Streamlit app
 def main():
@@ -58,7 +43,13 @@ def main():
         if api_key and address:
             properties, headers = get_property_info(api_key, address)
             if properties:
-                display_property_info(properties, headers)
+                st.write("### Property Information:")
+                st.write(properties)
+                
+                # Display response headers
+                st.write("### Response Headers:")
+                for key, value in headers:
+                    st.write(f"**{key}:** {value}")
             else:
                 st.warning("No data available for the provided address.")
         else:
