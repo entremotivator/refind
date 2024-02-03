@@ -73,20 +73,9 @@ def display_property_info(property_data):
     st.write(f"**Longitude:** {property_data['longitude']}")
     st.write(f"**Latitude:** {property_data['latitude']}")
 
-# Function to generate different types of letters based on property situation
-def generate_letter(property_data, letter_type):
-    if letter_type == "Type 1":
-        return f"Dear Homeowner,\n\nWe are interested in purchasing your property at {property_data['formattedAddress']}. Please let us know if you are open to discussing a potential sale."
-
-    if letter_type == "Type 2":
-        return f"Dear Owner,\n\nWe are currently looking for a single-family home, and your property at {property_data['formattedAddress']} caught our attention. We would like to inquire about the possibility of purchasing it."
-
-    if letter_type == "Type 3":
-        return f"Dear Property Owner,\n\nWe have learned that your property at {property_data['formattedAddress']} is facing foreclosure. We are interested in discussing potential solutions and may be interested in purchasing the property."
-
-    # Add more letter templates for other situations as needed
-
-    return f"Dear Property Owner,\n\nWe are interested in your property at {property_data['formattedAddress']}. Please contact us to discuss the potential sale."
+# Function to generate a 200-word letter with custom information
+def generate_letter(property_data, buyer_name, buyer_contact, personalized_message):
+    return f"Dear {property_data['owner']['names'][0]},\n\nI hope this letter finds you well. My name is {buyer_name}, and I am interested in purchasing your property located at {property_data['formattedAddress']}. Having learned about its features, including {property_data['features']}, and considering its {property_data['propertyType']} type, I believe it would be an ideal fit for me.\n\nI am impressed by the {property_data['squareFootage']} square footage, {property_data['bedrooms']} bedrooms, and {property_data['bathrooms']} bathrooms. The {property_data['yearBuilt']} property with a lot size of {property_data['lotSize']} offers a unique opportunity.\n\nI am genuinely interested in making this property my home, and I would appreciate the opportunity to discuss a potential sale. Please feel free to contact me at {buyer_contact} to arrange a convenient time for us to connect.\n\n{personalized_message}\n\nThank you for considering my inquiry. I look forward to the possibility of becoming the new owner of your property.\n\nSincerely,\n{buyer_name}"
 
 # Main Streamlit app
 def main():
@@ -96,9 +85,6 @@ def main():
     api_key = st.sidebar.text_input("Enter your API key", help="Get it from Realty Mole API")
     address = st.sidebar.text_input("Enter the address", help="E.g., 5500 Grand Lake Dr, San Antonio, TX, 78244")
 
-    # Type of letter selection
-    letter_type = st.sidebar.selectbox("Select Letter Type", ["Type 1", "Type 2", "Type 3"])
-
     if st.sidebar.button("Get Property Info"):
         if api_key and address:
             with st.spinner("Fetching property information..."):
@@ -107,11 +93,19 @@ def main():
             if properties:
                 display_property_info(properties[0])
 
+                # Custom Information Inputs
+                buyer_name = st.text_input("Your Name", help="Enter your full name")
+                buyer_contact = st.text_input("Your Contact Information", help="Enter your email or phone number")
+                personalized_message = st.text_area("Personalized Message", help="Enter any additional message or specific details you'd like to convey (optional)")
+
                 # Generate Letter
                 if st.button("Generate Letter"):
-                    letter = generate_letter(properties[0], letter_type)
-                    st.write(f"### Generated Letter:")
-                    st.write(letter)
+                    if buyer_name and buyer_contact:
+                        letter = generate_letter(properties[0], buyer_name, buyer_contact, personalized_message)
+                        st.write(f"### Generated Letter:")
+                        st.write(letter)
+                    else:
+                        st.warning("Please provide your name and contact information.")
 
 if __name__ == "__main__":
     main()
