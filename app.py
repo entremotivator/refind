@@ -7,6 +7,30 @@ from urllib.parse import quote
 def get_property_info(api_key, address):
     # Your existing code for making API requests
 
+# Display basic property details
+def display_basic_details(property_data):
+    # Your existing code for displaying basic details
+
+# Display property features
+def display_features(features):
+    # Your existing code for displaying features
+
+# Display tax assessment details
+def display_tax_assessment(tax_assessment):
+    # Your existing code for displaying tax assessment details
+
+# Display property taxes
+def display_property_taxes(property_taxes):
+    # Your existing code for displaying property taxes
+
+# Display owner information
+def display_owner_info(owner):
+    # Your existing code for displaying owner information
+
+# Display geographical information
+def display_geographical_info(property_data):
+    # Your existing code for displaying geographical information
+
 # Main Streamlit app
 def main():
     st.title("Realtor Property Information App")
@@ -25,45 +49,13 @@ def main():
                 st.write("### Property Information:")
                 property_data = properties[0]
 
-                # Basic property details
-                st.subheader("Basic Details:")
-                st.write(f"**Address:** {property_data['formattedAddress']}")
-                st.write(f"**Assessor ID:** {property_data['assessorID']}")
-                st.write(f"**Bedrooms:** {property_data['bedrooms']}")
-                st.write(f"**Bathrooms:** {property_data['bathrooms']}")
-                st.write(f"**Square Footage:** {property_data['squareFootage']} sq. ft.")
-                st.write(f"**Year Built:** {property_data['yearBuilt']}")
-                st.write(f"**Property Type:** {property_data['propertyType']}")
-
-                # Features
-                st.subheader("Features:")
-                features = property_data['features']
-                for feature, value in features.items():
-                    st.write(f"**{feature}:** {value}")
-
-                # Tax Assessment
-                st.subheader("Tax Assessment:")
-                tax_assessment = property_data['taxAssessment']
-                for year, details in tax_assessment.items():
-                    st.write(f"**Year {year}:** Value: {details['value']}, Land: {details['land']}, Improvements: {details['improvements']}")
-
-                # Property Taxes
-                st.subheader("Property Taxes:")
-                property_taxes = property_data['propertyTaxes']
-                for year, details in property_taxes.items():
-                    st.write(f"**Year {year}:** Total: {details['total']}")
-
-                # Owner Information
-                st.subheader("Owner Information:")
-                owner = property_data['owner']
-                st.write(f"**Owner Name(s):** {', '.join(owner['names'])}")
-                mailing_address = owner['mailingAddress']
-                st.write(f"**Mailing Address:** {mailing_address['addressLine1']}, {mailing_address['city']}, {mailing_address['state']} {mailing_address['zipCode']}")
-
-                # Geographical Information
-                st.subheader("Geographical Information:")
-                st.write(f"**Longitude:** {property_data['longitude']}")
-                st.write(f"**Latitude:** {property_data['latitude']}")
+                # Display different sections of property information
+                display_basic_details(property_data)
+                display_features(property_data['features'])
+                display_tax_assessment(property_data['taxAssessment'])
+                display_property_taxes(property_data['propertyTaxes'])
+                display_owner_info(property_data['owner'])
+                display_geographical_info(property_data)
 
                 # Export to CSV
                 if st.button("Export to CSV"):
