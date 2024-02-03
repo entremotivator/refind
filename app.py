@@ -3,7 +3,7 @@ import requests
 
 # Function to get property information from the API
 def get_property_info(api_key, address):
-    api_url = 'https://realty-mole-property-api.p.rapidapi.com/properties'
+    url = "https://realty-mole-property-api.p.rapidapi.com/properties"
     headers = {
         'X-RapidAPI-Key': api_key,
         'X-RapidAPI-Host': 'realty-mole-property-api.p.rapidapi.com'
@@ -12,7 +12,7 @@ def get_property_info(api_key, address):
     params = {'address': address}
 
     try:
-        response = requests.get(api_url, headers=headers, params=params)
+        response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()  # Raise an HTTPError for bad responses
         data = response.json()
         return data
