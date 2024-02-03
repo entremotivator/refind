@@ -3,7 +3,7 @@ import requests
 
 # Function to get property information from the API
 def get_property_info(api_key, address):
-    url = "https://realty-mole-property-api.p.rapidapi.com/properties"
+    url = "https://rapidapi.com/realtymole/api/realty-mole-property-api"
     headers = {
         'X-RapidAPI-Key': api_key,
         'X-RapidAPI-Host': 'realty-mole-property-api.p.rapidapi.com'
