@@ -7,27 +7,32 @@ from urllib.parse import quote
 # Function to get property information from the API using http.client
 def get_property_info(api_key, address):
     try:
-        with http.client.HTTPSConnection("realty-mole-property-api.p.rapidapi.com") as conn:
-            headers = {
-                'X-RapidAPI-Key': api_key,
-                'X-RapidAPI-Host': 'realty-mole-property-api.p.rapidapi.com'
-            }
+        conn = http.client.HTTPSConnection("realty-mole-property-api.p.rapidapi.com")
+        headers = {
+            'X-RapidAPI-Key': api_key,
+            'X-RapidAPI-Host': 'realty-mole-property-api.p.rapidapi.com'
+        }
 
-            # Encode the address for the URL
-            encoded_address = quote(address)
-            
-            # Make the API request
-            conn.request("GET", f"/properties?address={encoded_address}", headers=headers)
-            res = conn.getresponse()
+        # Encode the address for the URL
+        encoded_address = quote(address)
+        
+        # Make the API request
+        conn.request("GET", f"/properties?address={encoded_address}", headers=headers)
+        res = conn.getresponse()
 
-            # Check if the response contains JSON data
-            if 'application/json' in res.getheader('Content-Type', ''):
-                return json.load(res)
+        # Check if the response contains JSON data
+        if 'application/json' in res.getheader('Content-Type', ''):
+            data = res.read().decode("utf-8")
+            return json.loads(data)
+        else:
+            return None  # No JSON data in the response
 
     except Exception as e:
         st.exception(f"An error occurred: {e}")
+        return None
 
-    return None
+    finally:
+        conn.close()
 
 # Function to display property information
 def display_property_info(property_data):
@@ -59,7 +64,6 @@ def main():
         if api_key and address:
             with st.spinner("Fetching property information..."):
                 properties = get_property_info(api_key, address)
-                
             if properties:
                 display_property_info(properties[0])
 
