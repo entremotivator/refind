@@ -1,4 +1,3 @@
-streamlit
 http.client
 urllib3
 json
