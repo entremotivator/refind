@@ -1,1 +1,1 @@
-pytest==7.3.4  # Example development dependency
+pytest  # Example development dependency
